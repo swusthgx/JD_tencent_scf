@@ -57,6 +57,10 @@ let llAPIError = false
   const date = new Date()
   $.last_day = new Date(date.getFullYear(), date.getMonth()+1, 0).getDate() == date.getDate()
   for (let i = 0; i < cookiesArr.length; i++) {
+	if(new Date().getHours() > 14 & i>8){
+		console.log('跳过')
+		continue
+	}
     if (cookiesArr[i]) {
       cookie = cookiesArr[i];
       $.UserName = decodeURIComponent(cookie.match(/pt_pin=([^; ]+)(?=;?)/) && cookie.match(/pt_pin=([^; ]+)(?=;?)/)[1])

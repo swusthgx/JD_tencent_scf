@@ -53,10 +53,10 @@ let cityid = Math.round(Math.random() * (1500 - 1000) + 1000);
         thiscookie = await taskLoginUrl(thiscookie);
 
         await userinfo();
-        await $.wait(3000);
+        await $.wait(4000);
 
         await treeInfo();
-        await $.wait(3000);
+        await $.wait(4000);
 
         let tslist = await taskList();
         if (tslist.code == 1) {
@@ -65,7 +65,7 @@ let cityid = Math.round(Math.random() * (1500 - 1000) + 1000);
         }
 
         await collectWater();
-        await $.wait(10000);
+        await $.wait(15000);
 
         // await water();
         // await $.wait(1000);

@@ -52,14 +52,14 @@ let cityid = Math.round(Math.random() * (1500 - 1000) + 1000);
         thiscookie = await taskLoginUrl(thiscookie);
 
         await userinfo();
-        await $.wait(1000);
+        await $.wait(2000);
 
         let tslist = await taskList();
         if (tslist.code == 1) {
             $.notify('第' + (i + 1) + '个账号cookie过期', '请访问\nhttps://bean.m.jd.com/bean/signIndex.action\n抓取cookie', { url: 'https://bean.m.jd.com/bean/signIndex.action' });
             continue;
         }
-
+        await $.wait(2000);
         await sign();
         await $.wait(2000);
 

@@ -65,7 +65,7 @@ let cityid = Math.round(Math.random() * (1500 - 1000) + 1000);
         }
 
         await collectWater();
-        await $.wait(3000);
+        await $.wait(10000);
 
         // await water();
         // await $.wait(1000);

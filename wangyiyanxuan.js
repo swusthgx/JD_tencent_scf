@@ -67,7 +67,7 @@ async function sign(links,buildingId) {
 				addCoin += parseInt(data.data.addCoin);
 				wishValue = parseInt(data.data.userAccount.wishValue);
 				goldCoinNum = parseInt(data.data.userAccount.goldCoinNum);
-				console.log(`建筑${buildingId}收获金币:${data.data.addCoin}`);
+				//console.log(`建筑${buildingId}收获金币:${data.data.addCoin}`);
 			}
           }
         }

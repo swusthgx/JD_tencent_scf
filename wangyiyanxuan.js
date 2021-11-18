@@ -1,4 +1,5 @@
 const $ = new Env('网易严选');
+const notify = $.isNode() ? require('./sendNotify') : '';
 let CookieWYs = [
   '',//账号一ck
   '',//账号二ck
@@ -19,8 +20,6 @@ if (process.env.WY_COOKIE) {
 
 let cookiesArr = [], cookie = '',
 
-
-const notify = $.isNode() ? require('./sendNotify') : '';
 message = '';
 var addCoin = 0;
 var wishValue = 0;

@@ -93,11 +93,11 @@ function safeGet(data) {
 
 async function sign_energy() {
   try {
-    buidId=[3,4,1,2,6,7]
+    buidId=[3,4,1,7,6,2]
 	url_receiveGold='https://act.you.163.com/act/napi/fairyland/receiveGoldCoin?csrf_token=1176afb489d52bd72f460b6d90400430';
 	url_saveUserRecord='https://act.you.163.com/act/napi/fairyland/saveUserRecord?csrf_token=1176afb489d52bd72f460b6d90400430';
-    for (let i = 0; i < buidId.length; ++i) {
-	  console.log(`======== 开始收取建筑 ${buidId[i]} ============`)
+    console.log(`======== 开始收取金币 ============`)
+	for (let i = 0; i < buidId.length; ++i) {
       await sign(url_receiveGold,buidId[i])
       await sign(url_saveUserRecord)
       await $.wait(Math.floor((Math.random() * 20)))
@@ -117,9 +117,12 @@ async function sign_energy() {
 		message +=`当前金币:${Math.floor(goldCoinNum/1000000 * 10)/10}M\n`
 	}
 	message +=`当前心愿值:${wishValue/1000}K\n`
-	console.log(addCoin)
-	console.log(message)
-	await notify.sendNotify($.name,message);
+	//console.log(addCoin)
+	//console.log(message)
+	if(new Date().getHours >21 & new Date().getHours <22){
+		await notify.sendNotify($.name,message);
+	}
+	
 	
     // await showMsg()
   } catch (e) {

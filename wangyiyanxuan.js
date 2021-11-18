@@ -118,8 +118,8 @@ async function sign_energy() {
 	}
 	message +=`当前心愿值:${wishValue/1000}K\n`
 	//console.log(addCoin)
-	//console.log(message)
-	if(new Date().getHours >21 & new Date().getHours <22){
+	console.log(message)
+	if(new Date().getHours >21 && new Date().getHours <22){
 		await notify.sendNotify($.name,message);
 	}
 	

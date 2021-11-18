@@ -1,4 +1,4 @@
-const $ = new Env('网易严选');
+const $ = new Env('网易严选心愿城');
 const notify = $.isNode() ? require('./sendNotify') : '';
 let CookieWYs = [
   '',//账号一ck
@@ -67,15 +67,8 @@ async function sign(links,buildingId) {
 				addCoin += parseInt(data.data.addCoin);
 				wishValue = parseInt(data.data.userAccount.wishValue);
 				goldCoinNum = parseInt(data.data.userAccount.goldCoinNum);
-				console.log(addCoin)
-			    //console.log(`建筑${buildingId}收获金币:${data.data.addCoin}`);
-				//console.log(`当前心愿值:${data.data.userAccount.wishValue}`);
-				//console.log(`获得${data.data.userAccount.nickName}`);
-				//await notify.sendNotify($.name,`收获金币${data.data.addCoin}`);
-			}else{
-				console.log("888");
+				console.log(`建筑${buildingId}收获金币:${data.data.addCoin}`);
 			}
-
           }
         }
       } catch (e) {
@@ -104,12 +97,12 @@ async function sign_energy() {
 	url_receiveGold='https://act.you.163.com/act/napi/fairyland/receiveGoldCoin?csrf_token=1176afb489d52bd72f460b6d90400430';
 	url_saveUserRecord='https://act.you.163.com/act/napi/fairyland/saveUserRecord?csrf_token=1176afb489d52bd72f460b6d90400430';
     for (let i = 0; i < buidId.length; ++i) {
-	  console.log(`======== Begin building ${i} ============`)
+	  console.log(`======== 开始收取建筑 ${buidId[i]} ============`)
       await sign(url_receiveGold,buidId[i])
       await sign(url_saveUserRecord)
-      await $.wait(Math.floor((Math.random() * 10)))
+      await $.wait(Math.floor((Math.random() * 20)))
     }
-	message +=`——————————————————————————————————\n`
+	message +=`-----------------------\n`
 	
 	if(addCoin<1000000){
 		message +=`本次运行获得金币:${Math.floor(addCoin/1000)}K\n`

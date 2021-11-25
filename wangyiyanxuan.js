@@ -1,6 +1,11 @@
 /*
-cron " 20 * * * *" wangyiyanxuan.js, tag:网易严选
+
+[task_local]
+#网易严选
+13 6 * * * wangyiyanxuan.js, tag=网易严选, enabled=true
+
 */
+
 
 const $ = new Env('网易严选心愿城');
 const notify = $.isNode() ? require('./sendNotify') : '';

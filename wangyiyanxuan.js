@@ -1,3 +1,7 @@
+/*
+cron " 20 * * * *" wangyiyanxuan.js, tag:网易严选
+*/
+
 const $ = new Env('网易严选心愿城');
 const notify = $.isNode() ? require('./sendNotify') : '';
 const wyCookieNode = $.isNode() ? require('./wyCookie.js') : '';

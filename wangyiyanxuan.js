@@ -6,7 +6,6 @@
 
 */
 
-
 const $ = new Env('网易严选心愿城');
 const notify = $.isNode() ? require('./sendNotify') : '';
 const wyCookieNode = $.isNode() ? require('./wyCookie.js') : '';
@@ -27,15 +26,21 @@ url_receiveReward="https://act.you.163.com/act/napi/wish-tree/receiveReward?csrf
 url_finishTask="https://act.you.163.com/act/napi/wish-tree/finishTask?_="+Date.now() //做任务{"taskType":"20","taskId":"1"} post
 url_getFinishedAwardList="https://act.you.163.com/act/napi/wish-tree/getFinishedAwardList?csrf_token=db4c7db9b0245e45227c64a11b29b049&__timestamp="+Date.now() //已完成任务信息get
 url_getTopID="https://you.163.com/topic/v1/getTopicId.json?token=4JS7MUWKXFAT&_="+Date.now()
+url_getThreeMealsWater="https://act.you.163.com/act/napi/wish-tree/getThreeMealsWater?csrf_token=1176afb489d52bd72f460b6d90400430&taskId&taskType&__timestamp="+Date.now()//获取3餐水滴get
+url_waterFertilization="https://act.you.163.com/act/napi/wish-tree/waterFertilization?csrf_token=ffee5313bb71f9c70d3f7c7fe1017dab" //施肥
 
-
+//积分签到
 url_getSignInfo="https://m.you.163.com/act-attendance/attendance/index.json?csrf_token=db4c7db9b0245e45227c64a11b29b049&__timestamp="+Date.now()//获取签到信息
 url_signTask="https://m.you.163.com/act-attendance/attendance/attendance.json?csrf_token=db4c7db9b0245e45227c64a11b29b049&__timestamp="+Date.now()//签到获得积分
 url_lottery="https://m.you.163.com/act-attendance/attendance/lottery.json?csrf_token=ffee5313bb71f9c70d3f7c7fe1017dab&__timestamp="+Date.now()//积分签到抽奖
 
+var signRewardWater="sign reward water"
 var taskScan10s="Scan10s"
 var taskFindGP="FindGoodProducts"
 var taskClick5P="Click5Products"
+var taskWaterFertilization="waterFertilization"
+var taskSignFertilization="signFertilization"
+
 var receiveRewardScan10s="receiveRewardS10s"
 var receiveRewardClick5P="receiveRewardClick"
 var receiveRewardFindGP="receiveRewardFindGP"
@@ -43,6 +48,7 @@ var receiveRewardFindGP="receiveRewardFindGP"
 var getSignInfo="getSignInfo"
 var signTask="doSignTask"
 var lottery="lottery"
+const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
 
 !(async() => {
 	if (!cookiesArr[0]) {
@@ -52,9 +58,9 @@ var lottery="lottery"
 		return;
 	}
 
-	for (a = 0; a < cookiesArr.length; a++) {
+	for (let a = 0; a < cookiesArr.length; a++) {
 		console.log(`==============开始账号${a},共${cookiesArr.length}个账号================`)
-        console.log(cookiesArr[a])
+        //console.log(cookiesArr[a])
 		if (cookiesArr[a]) {
 			$.cookie = cookiesArr[a];
 			//$.pt_pin = (cookie.match(/pt_pin=([^; ]+)(?=;?)/) && cookie.match(/pt_pin=([^; ]+)(?=;?)/)[1]);
@@ -64,53 +70,63 @@ var lottery="lottery"
             //$.myCookie = mycookieAsura;
 	        $.myBuildingId = [];
 			$.nickName = ''
-			$.usrToken = '1176afb489d52bd72f460b6d90400430'
+			//$.usrToken = '1176afb489d52bd72f460b6d90400430'
+            $.usrToken = '8abf022aeeafafdaa752f01d0eb8d44f'
 			$.addCoin = 0;
 			$.wishValue = 0;
 			$.goldCoinNum = 0;
 			$.message = '';
             $.rewardId = 0;
 	        //await finishTask()
-            
-			await getUserBuildingInfo() //获取建筑信息
+
+
+            //-----心愿城
+            await getUserBuildingInfo() //获取建筑信息
+            await sleep(2000)
 			await coinTask() //收取金币
-
-
             while($.hasSpecialTaskCount == true){
                 await sleep(2000)
                 await receiveSpecialGoldCoin()
                 console.log(`金币宝箱还有次数,等待100秒...`)
-                await sleep(101000)
+                await sleep(105000)
                 await getUserBuildingInfo()
-                
+                await sleep(2000)
             }
-			// if($.hasSpecialTaskCount == true){
-            //     await receiveSpecialGoldCoin()
-			// 	console.log(`打开金币宝箱,获得金币:${$.receiveSpecialCoin}`)
-			// }else{
-			// 	console.log(`金币宝箱冷却中或次数已用完`)
-			// }
 			
-			
-			
-			//-----心愿树
+            //-----心愿树
+            //await wishGet(url_tomorrowWater) //领取昨日攒的水滴
+
+            hours = new Date().getHours()
+            minutes = new Date().getMinutes()
+            console.log("hours="+hours+(hours%8 == 0 || hours%12 == 0 || hours%18 == 0))
+            //return
+            if((hours== 8 | hours == 13 | hours == 18) && minutes < 30){
+				await sleep(5000)
+                console.log("获取3餐水滴")
+                await wishGet(url_getThreeMealsWater) //获取3餐水滴
+                await sleep(5000)
+                await getUserTreeInfo() //获取树苗信息,等级>5则签到领化肥
+				await sleep(5000)
+            }
+            if((hours== 8 | hours == 13 | hours == 17) && minutes < 10){
+				await sleep(5000)
+                await watering() //浇水
+                await sleep(5000)
+                await getTaskList() //获取任务列表,并去做任务
+                await sleep(5000)
+                await wishGet(url_getFinishedAwardList) //查看任务列表是否有奖励未领
+                await sleep(5000)
+                await wishGet(url_tomorrowWater)//查询是否已领取昨日攒的水滴,未领取则去领取
+            }
+                
+
 			//await getThreeMealsWater() //获取3餐水滴
 			//await sleep(3000)
-			//await finishTask() //签到获取水滴
-            //await getUserTreeInfo() //获取树苗信息
-			//await wishGet(url_sign) 
-            //await sleep(radomTimers())
-            //await wishPost(url_finishTask,taskScan10s)
-            //await sleep(radomTimers())
-            //await wishPost(url_finishTask,taskFindGP)
-            //await wishGet(url_getFinishedAwardList)
-            //await getTaskList()
-			//await watering() //浇水
-			//await getUserTreeInfo()
-			await sleep(radomTimers())
+            
+			
 			//----------积分签到
-			//await Sign(url_getSignInfo,getSignInfo)//获取积分签到信息
-            //await Sign(url_signTask,signTask)//积分签到
+			await Sign(url_getSignInfo,getSignInfo)//获取积分签到信息
+            await Sign(url_signTask,signTask)//积分签到
             //await Sign(url_lottery,lottery)//积分签到抽奖
 			//await sleep(radomTimers())
         }
@@ -125,10 +141,18 @@ var lottery="lottery"
 })
 
 
-var sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+async function jdGlobal() {
+    try {
+        await wishGet(url_getFinishedAwardList)
+ 
+
+    } catch (e) {
+      $.logErr(e)
+    }
+  }
 
 
-async function rewardGoldCoin(links,buildingId) {//收取金币
+function rewardGoldCoin(links,buildingId) {//收取金币
   return new Promise(resolve => {
     //const body = {"linkId":signLinkId,"serviceName":"dayDaySignGetRedEnvelopeSignService","business":1};
 	const body ={"buildingId":buildingId};//列一:3,4;列二:2,1;列三:6,7
@@ -372,7 +396,7 @@ function Sign(url,taskName) {//每日积分签到
 	})
 }
 
-async function receiveSpecialGoldCoin() {//打开金币宝箱
+function receiveSpecialGoldCoin() {//打开金币宝箱
   return new Promise(resolve => {
     //const body = {"linkId":signLinkId,"serviceName":"dayDaySignGetRedEnvelopeSignService","business":1};
     const options = {
@@ -398,7 +422,7 @@ async function receiveSpecialGoldCoin() {//打开金币宝箱
         } else {
 		  data = JSON.parse(data);
 		  //console.log(resp)
-		  console.log(data)
+		  //console.log(data)
           if (data.code == 811) {
 			console.log(`叼毛手速太快了,冷却时间100秒`)
 			return
@@ -423,7 +447,7 @@ async function receiveSpecialGoldCoin() {//打开金币宝箱
 }
 
 //-------------------------------------------------------心愿树--------------------
-async function watering() {//心愿树浇水
+function watering() {//心愿树浇水
   return new Promise(resolve => {
     //const body = {"linkId":signLinkId,"serviceName":"dayDaySignGetRedEnvelopeSignService","business":1};
 	url="https://act.you.163.com/act/napi/wish-tree/waterFertilization?csrf_token=1176afb489d52bd72f460b6d90400430"
@@ -458,8 +482,17 @@ async function watering() {//心愿树浇水
         } else {
 		  //console.log(resp)
           data = JSON.parse(data);
-		  console.log(data)
+          if(data.code == 401){
+              console.log(`未知错误:??`+data.code)
+              return
+          }
+		  //console.log(data)
           console.log(`心愿树等级${data.data.treeLevel}, 浇水成功\n剩余水滴${data.data.kettleWater}g, 明天可领取水滴${data.data.tomorrowWaterValue}g, 当前营养值${data.data.nutritionValue}`)
+          if(data.data.nutritionValue < 80){
+              console.log(`营养不够,去施肥...`)
+              finishTask(url_waterFertilization,taskWaterFertilization)
+              await sleep(radomTimers())
+          }
           if(data.data.tomorrowWaterValue < 80 ){
               await watering()
               await sleep(radomTimers())
@@ -499,15 +532,13 @@ function getUserTreeInfo() {//心愿树信息
 				} else {
 					if (data) {
 						data = JSON.parse(data);
-						console.log(data)
-						//console.log(resp)
-						//console.log(data.code)
-						if (data.code == 200) {
-							console.log(200111)
-							$.isLogin = false; //cookie过期
+						//console.log(data)
+						if (data.code != 200) {
 							return;
 						}
-
+                        if(data.data.userTreeInfoModel.treeLevel >=5){
+                            finishTask(url_finishTask,taskSignFertilization)
+                        }
 					} else {
 						$.log('服务器返回空数据,将无法获取信息');
 					}
@@ -547,15 +578,28 @@ function getTaskList() {//获取任务列表
 				} else {
 					if (data) {
 						data = JSON.parse(data);
-						console.log(data)
+						//console.log(data)
 						//console.log(resp)
-						console.log(data.code)
-						if (data.code == 200) {
-							console.log(200111)
-							$.isLogin = false; //cookie过期
-							return;
-						}
-
+                        if(data.code != 200){
+                            return
+                        }
+						console.log(data.data.length)
+                        for (let a = 0; a < data.data.length; a++) {
+                            id = data.data[a].id
+                            finishedChance = data.data[a].finishedChance
+                            if(id == 0 && finishedChance ==0){
+                                console.log(`去签到...`)
+                                finishTask(url_finishTask,signRewardWater)
+                            }
+                            if(id == 1 && data.data[a].taskType ==20 && finishedChance !=3){
+                                console.log(`去做任务{浏览活动页面10秒}...`)
+                                finishTask(url_finishTask,taskScan10s)
+                            }
+                            if(id == 6 && finishedChance ==0){
+                                console.log(`去做任务{发现严选好物}...`)
+                                finishTask(url_finishTask,taskFindGP)
+                            }
+                        }
 					} else {
 						$.log('服务器返回空数据,将无法获取信息');
 					}
@@ -570,59 +614,59 @@ function getTaskList() {//获取任务列表
 	})
 }
 
-function getThreeMealsWater() {//获取3餐水滴,7-9,12-14,18-20
-	return new Promise(async resolve => {
-		url="https://act.you.163.com/act/napi/wish-tree/getThreeMealsWater?csrf_token=1176afb489d52bd72f460b6d90400430&taskId&taskType&__timestamp="+Date.now()
-		const options = {
-			url: url,
-			headers: {
-			  'Cookie': $.cookie,
-			  "Host": "act.you.163.com",
-			  'Origin': 'https://act.you.163.com',
-			  "Content-Type": "application/json",
-			  "Accept": "application/json, text/javascript, */*; q=0.01",
-			  "Connection": "keep-alive",
-			  "User-Agent": "Mozilla/5.0 (Linux; Android 10; ELS-AN00 Build/HUAWEIELS-AN00; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/88.0.4324.93 Mobile Safari/537.36 yanxuan/6.7.9 device-id/3228a1a8086bea61a303e7f6305fcc1c app-chan-id/aos_market_huawei trustId/android_trustid_8821a74f57ec4f08bf2666e6bc82a51a",
-			  "Accept-Language": "zh-CN,zh;q=0.9,en-CN;q=0.8,en-US;q=0.7,en;q=0.6",
-			  'Referer': 'https://act.you.163.com/act/pub/0lgg78TZlisC.html',
-			  "Accept-Encoding": "gzip, deflate",
-			}
-		}
-		$.get(options, (err, resp, data) => {
-			try {
-				if (err) {
-					$.logErr(err)
-				} else {
-					if (data) {
-						data = JSON.parse(data);
-						console.log(data)
-						//console.log(resp)
-						if(data.code == 400){
-							console.log(data.msg)
-						}
+// function getThreeMealsWater() {//获取3餐水滴,7-9,12-14,18-20
+// 	return new Promise(async resolve => {
+// 		url="https://act.you.163.com/act/napi/wish-tree/getThreeMealsWater?csrf_token=1176afb489d52bd72f460b6d90400430&taskId&taskType&__timestamp="+Date.now()
+// 		const options = {
+// 			url: url,
+// 			headers: {
+// 			  'Cookie': $.cookie,
+// 			  "Host": "act.you.163.com",
+// 			  'Origin': 'https://act.you.163.com',
+// 			  "Content-Type": "application/json",
+// 			  "Accept": "application/json, text/javascript, */*; q=0.01",
+// 			  "Connection": "keep-alive",
+// 			  "User-Agent": "Mozilla/5.0 (Linux; Android 10; ELS-AN00 Build/HUAWEIELS-AN00; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/88.0.4324.93 Mobile Safari/537.36 yanxuan/6.7.9 device-id/3228a1a8086bea61a303e7f6305fcc1c app-chan-id/aos_market_huawei trustId/android_trustid_8821a74f57ec4f08bf2666e6bc82a51a",
+// 			  "Accept-Language": "zh-CN,zh;q=0.9,en-CN;q=0.8,en-US;q=0.7,en;q=0.6",
+// 			  'Referer': 'https://act.you.163.com/act/pub/0lgg78TZlisC.html',
+// 			  "Accept-Encoding": "gzip, deflate",
+// 			}
+// 		}
+// 		$.get(options, (err, resp, data) => {
+// 			try {
+// 				if (err) {
+// 					$.logErr(err)
+// 				} else {
+// 					if (data) {
+// 						data = JSON.parse(data);
+// 						console.log(data)
+// 						//console.log(resp)
+// 						if(data.code == 400){
+// 							console.log(data.msg)
+// 						}
 						
 
-						if (data.code == 200) {
-							console.log(`3餐水滴领取成功,获得水滴${data.data.rewardThreeMealsWater}g, 当前共有水滴${data.data.kettleWater}`)
-							//cookie过期
-							//return;
-						}
+// 						if (data.code == 200) {
+// 							console.log(`3餐水滴领取成功,获得水滴${data.data.rewardThreeMealsWater}g, 当前共有水滴${data.data.kettleWater}`)
+// 							//cookie过期
+// 							//return;
+// 						}
 
-					} else {
-						$.log('服务器返回空数据,将无法获取信息');
-					}
-				}
-			} catch (e) {
-				$.logErr(e)
-			}
-			finally {
-				resolve();
-			}
-		})
-	})
-}
+// 					} else {
+// 						$.log('服务器返回空数据,将无法获取信息');
+// 					}
+// 				}
+// 			} catch (e) {
+// 				$.logErr(e)
+// 			}
+// 			finally {
+// 				resolve();
+// 			}
+// 		})
+// 	})
+// }
 
-async function finishTask() {//每日签到获取水滴
+function finishTask1() {//每日签到获取水滴
   return new Promise(resolve => {
 	const body ={"taskType":10,"taskId":"0"};//每日签到获取水滴
 	//const body ={"taskType":90,"taskId":"6"}; //
@@ -650,7 +694,7 @@ async function finishTask() {//每日签到获取水滴
         } else {
 		  data = JSON.parse(data);
 		  //console.log(resp)
-		  console.log(data)
+		  //console.log(data)
           if (data.code == 402) {
 			console.log(`今天已签到`)
 			return
@@ -693,17 +737,16 @@ async function wishGet(url) {//获取心愿树任务是否可做 ,优化
 				} else {
 					if (data) {
 						data = JSON.parse(data);
-						console.log(data)
+						//console.log(data)
 						//console.log(resp)
-						if(data.code == 400){
-							console.log(data.msg)
+						if(data.code == 400 || data.code == 401){
+							console.log(`获取数据错误:`+data.msg)
 							return resolve(data);
 						}
 						
 						if (data.code == 200) {
 							//console.log(`code == 200`)
-							 //cookie过期
-							
+							 //cookie过期	
 						}
 						//if( !data.data.entered ){
 						//	console.log(`进入心愿城任务还未做`)
@@ -711,8 +754,9 @@ async function wishGet(url) {//获取心愿树任务是否可做 ,优化
 						switch (url) {
 							case url_tomorrowWater:
                                 if(data.data.status){
-                                    console.log(`今日可领取水滴${data.data.tomorrowWaterValue}g`)
+                                    console.log(`今日可领取水滴${data.data.tomorrowWaterValue}g,去领取水滴`)
                                     wishGet(url_getTomorrowWater)
+                                    
                                 }else{
                                     console.log(`今日水滴已领取过,明日可领取${data.data.tomorrowWaterValue}g`)
                                 }
@@ -725,30 +769,29 @@ async function wishGet(url) {//获取心愿树任务是否可做 ,优化
                                 console.log(`领取成功,当前共有水滴${data.data.kettleWater}g`)
 							    break;
                             case url_getFinishedAwardList:
-                                console.log(data.data.length)
-                                for (a = 0; a < data.data.length; a++) {
+                                //console.log(data.data.length)
+                                for (let a = 0; a < data.data.length; a++) {
                                     if(data.data[a].taskId == 1){
                                         $.rewardId=data.data[a].id
                                         console.log(`领取浏览活动页面10秒奖励`)
-                                        wishPost(url_receiveReward,receiveRewardScan10s)
+                                        sleep(2000)
+                                        finishTask(url_receiveReward,receiveRewardScan10s)
                                     }
-
                                     if(data.data[a].taskId == 6){
                                         console.log(`领取发现严选好物奖励`)
                                         $.rewardId=data.data[a].id
-                                        wishPost(url_receiveReward,receiveRewardFindGP)
+                                        finishTask(url_receiveReward,receiveRewardFindGP)
                                     }
                                     if(data.data[a].taskId == 4){
                                         console.log(`领取点击5个商品奖励`)
                                         $.rewardId=data.data[a].id
-                                        wishPost(url_receiveReward,receiveRewardClick5P)
+                                        finishTask(url_receiveReward,receiveRewardClick5P)
                                     }
                                 }
                                 break;
 							default:
 							    break;
 						}
-
 					} else {
 						$.log('服务器返回空数据,将无法获取信息');
 					}
@@ -757,20 +800,22 @@ async function wishGet(url) {//获取心愿树任务是否可做 ,优化
 				$.logErr(e)
 			}
 			finally {
-				resolve(data);
+				resolve();
 			}
 		})
 	})
 }
 
-async function wishPost(url,taskName) {//
+function finishTask(url,taskName) {//
     return new Promise(resolve => {
-      //const body ={"taskType":10,"taskId":"0"};//每日签到获取水滴
-      //const body ={"rewardIds":["15268855"],"taskType":20}; //领取浏览活动页面10秒任务水滴
-      //const body ={"taskType":"20","taskId":"1"}; //做浏览活动页面10秒任务
-      //const body ={"taskType":"20","taskId":"1"}; //做浏览活动页面10秒任务
       body='';
       switch(taskName){
+          case signRewardWater:
+              body ={"taskType":10,"taskId":"0"};//签到获得水滴
+              break;
+          case taskSignFertilization:
+              body ={"taskType":80,"taskId":"5"};//签到获得化肥
+              break;
           case taskScan10s:
               body ={"taskType":"20","taskId":"1"};
               console.log(`开始做任务浏览活动页面10秒`)
@@ -783,9 +828,12 @@ async function wishPost(url,taskName) {//
               body ={"taskType":"70","taskId":"4"};
               console.log(`开始做任务点击5个商品`)
               break;
+          case taskWaterFertilization:
+              body ={"type":"2","waste":false};
+              break;
           case receiveRewardScan10s:
               body ={"rewardIds":[$.rewardId],"taskType":20}
-              console.log(body)
+              //console.log(body)
               break;
           case receiveRewardFindGP:
               body ={"rewardIds":[$.rewardId],"taskType":90}
@@ -793,16 +841,14 @@ async function wishPost(url,taskName) {//
           case receiveRewardClick5P:
               body ={"rewardIds":[$.rewardId],"taskType":70}
               break;
-
           default:
               break;
 
       }
 
-
-
       const options = {
         body: JSON.stringify(body),
+        //url:"https://act.you.163.com/act/napi/wish-tree/finishTask?_="+Date.now(),
         url:url,
         headers: {
           'Cookie': $.cookie,
@@ -825,33 +871,46 @@ async function wishPost(url,taskName) {//
           } else {
             data = JSON.parse(data);
             //console.log(resp)
-            console.log(data)
-            if (data.code == 402 | data.code == 901 |data.code == 404) {
-              console.log(`领取失败或任务已完成,${data.msg}`)
+            //console.log(data)
+            //if (data.code == 402 || data.code == 901 ||data.code == 404) {
+            if (data.code != 200) {
+              console.log(`错误信息 :${data.msg}`)
               return resolve(data);
             }
-
             switch(taskName){
+                case signRewardWater:
+                    if (data.code == 402) {
+                        console.log(`今天已签到`)
+                        return
+                      }
+                      console.log(`签到成功,获得水滴${data.data.waterValue}`)
+                    break;
                 case taskScan10s:
                     $.rewardId = data.data.rewardId
                     if($.rewardId > 0){
                         console.log(`任务完成,去领取奖励`)
-                        await sleep(radomTimers())
-                        wishPost(url_receiveReward,receiveRewardScan10s)
-                        await sleep(radomTimers())
+                        sleep(radomTimers())
+                        finishTask(url_receiveReward,receiveRewardScan10s)
+                        sleep(radomTimers())
                         if(data.data.dayTimes < 3){
-                            wishPost(url_finishTask,taskScan10s)
+                            finishTask(url_finishTask,taskScan10s)
                         }
                     }
-                    
+                    $.rewardId = 0
                     break;
                 case taskFindGP:
-
+                    $.rewardId = data.data.rewardId
+                    if($.rewardId > 0){
+                        finishTask(url_receiveReward,receiveRewardFindGP)
+                    }
                     //console.log(`做任务${taskFindGP},${body}`)
                     break;
                 case taskClick5P:
                     $.rewardId = data.data.rewardId
                     //console.log(`做任务${taskClick5P},${body}`)
+                    break;
+                case taskWaterFertilization:
+
                     break;
                 case receiveRewardScan10s:
                     console.log(`领取奖励成功,获得水滴${data.data.rewardWaterValue}g`)
@@ -863,6 +922,7 @@ async function wishPost(url,taskName) {//
                 case receiveRewardClick5P:
                     console.log(`领取奖励成功,获得水滴${data.data.rewardWaterValue}g`)
                     break;
+
                 default:
                     break;
       
@@ -877,7 +937,6 @@ async function wishPost(url,taskName) {//
       })
     })
   }
-
 
 //--------------------------------------------心愿树-----------------------------------------------------------------------------
 function radomTimers() {

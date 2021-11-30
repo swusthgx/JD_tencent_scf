@@ -1,10 +1,9 @@
-/*
-
-[task_local]
-#网易严选
-13 6 * * * wangyiyanxuan.js, tag=网易严选, enabled=true
-
+/**
+网易严选
+cron 0 * * * * wangyiyanxuan.js
 */
+
+
 
 const { resourceUsage } = require('process');
 

@@ -274,7 +274,7 @@ async function doWishTreeTask() {
                 if($.data.data.nutritionValue < 90 ){
                     console.log(`需要施肥`)
                     await finishTask(url_waterFertilizationpost,taskWaterFertilization)
-                    await sleep(2000)
+                    await sleep(3000)
                 }
             }
         }
@@ -292,7 +292,7 @@ async function doWishTreeTask() {
             await watering()
             await sleep(radomTimers())
             await getUserTreeInfo()
-            await sleep(2000)
+            await sleep(3000)
         }
         $.data = null
     }
@@ -1261,7 +1261,7 @@ function finishTask(url,taskName) {//
           } else {
             data = JSON.parse(data);
             //console.log(resp)
-            console.log(data)
+            //console.log(data)
             //if (data.code == 402 || data.code == 901 ||data.code == 404) {
             if (data.code != 200) {
               console.log(`错误信息 :${data.msg}`)

@@ -89,11 +89,10 @@ const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
 	}
 
 
-    await notify.sendNotify($.name,$.message);
     if(new Date().getHours()%6 == 0 && new Date().getMinutes() < 20){
         await notify.sendNotify($.name,$.message);
     }
-    if($.signMessage){
+    if(new Date().getHours()%12 == 0 && new Date().getMinutes() < 20 && $.signMessage){
         await sleep(5000)
         await notify.sendNotify($.name,$.signMessage);
     }

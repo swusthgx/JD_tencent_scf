@@ -3,8 +3,6 @@
 cron 0 * * * * wangyiyanxuan.js
 */
 
-
-
 const { resourceUsage } = require('process');
 
 const $ = new Env('网易严选心愿城');
@@ -56,12 +54,11 @@ const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
 
 !(async() => {
 	if (!cookiesArr[0]) {
-		$.msg($.name, '【提示】请先获取京东账号一cookie\n直接使用NobyDa的京东签到获取', 'https://bean.m.jd.com/bean/signIndex.action', {
-			"open-url": "https://bean.m.jd.com/bean/signIndex.action"
-		});
+		$.msg($.name, '请检查cookie');
 		return;
 	}
-
+    $.message = '';
+    $.signMessage = '';
 	for (let a = 0; a < cookiesArr.length; a++) {
 		if (cookiesArr[a]) {
 			$.cookie = cookiesArr[a];
@@ -75,13 +72,12 @@ const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
 			$.addCoin = 0;
 			$.wishValue = 0;
 			$.goldCoinNum = 0;
-			$.message = '';
             $.rewardId = 0;
             $.index = a ;
 
             //-----心愿城
             await getUserBuildingInfo() //获取建筑信息
-			await rewardCoin() //收取金币
+            await rewardCoin() //收取金币
             await doFairylandTask()//心愿城任务
 
             //-----心愿树
@@ -91,6 +87,17 @@ const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
             await doPointSign()
         }
 	}
+
+
+    await notify.sendNotify($.name,$.message);
+    if(new Date().getHours()%6 == 0 && new Date().getMinutes() < 20){
+        await notify.sendNotify($.name,$.message);
+    }
+    if($.signMessage){
+        await sleep(5000)
+        await notify.sendNotify($.name,$.signMessage);
+    }
+
 
 })()
 .catch((e) => {
@@ -200,7 +207,9 @@ async function doPointSign() {
         }
         if($.data.data.signTaskData.goodsSceneBo != null){
             console.log(`连续签到免费拿商品信息:\n商品名称: {${$.data.data.signTaskData.goodsSceneBo.name}},原价:${$.data.data.signTaskData.goodsSceneBo.price}元`)
-            console.log(`需要连续签到: ${$.data.data.signTaskData.totalDay}天, 已连续签到: ${$.data.data.signTaskData.haveSignInDay}天`)
+            console.log(`需要连续签到: ${$.data.data.signTaskData.totalDay}天, 已连续签到: ${$.data.data.signTaskData.haveSignInDay}天\n`)
+            $.signMessage += `连续签到免费拿商品信息:\n商品名称: {${$.data.data.signTaskData.goodsSceneBo.name}},原价:${$.data.data.signTaskData.goodsSceneBo.price}元`
+            $.signMessage += `需要连续签到: ${$.data.data.signTaskData.totalDay}天, 已连续签到: ${$.data.data.signTaskData.haveSignInDay}天\n`
         }else{
             console.log(`当前没有连续签到获得商品任务.`)
         }
@@ -210,6 +219,7 @@ async function doPointSign() {
             sleep(2000)
         }else{
             console.log(`今天已签到,无需去签到`)
+            $.signMessage = '';
             $.data=null;
         }
         //console.log(data.data.signTaskData.attendanceInfoBoList)
@@ -224,8 +234,8 @@ async function doPointSign() {
             return
         }else if($.data.code == 200 ){
             console.log(`签到成功,已连续签到${$.data.data.haveSignInDay}天。\n签到获得${$.data.data.score}积分,连续签到获得${$.data.data.continuousScore},总共获得${$.data.data.totalScore}积分。\n明日签到积分${$.data.data.tomorrowPoint}`)
-            $.message = `'{$.nickName}'签到成功,已连续签到${$.data.data.haveSignInDay}天。\n签到获得${$.data.data.score}积分,连续签到获得${$.data.data.continuousScore},总共获得${$.data.data.totalScore}积分。\n明日签到积分${$.data.data.tomorrowPoint}`
-            notify.sendNotify($.name,$.message);
+            $.signMessage += `'${$.nickName}'签到成功,已连续签到${$.data.data.haveSignInDay}天。\n签到获得${$.data.data.score}积分,连续签到获得${$.data.data.continuousScore},总共获得${$.data.data.totalScore}积分。\n明日签到积分${$.data.data.tomorrowPoint}`
+            // notify.sendNotify($.name,$.signMessage);
             if($.data.data.lotteryTimes == 1){
                 console.log(`每周1次抽奖机会,周二刷新。当前可抽奖次数${$.data.data.lotteryTimes},去抽奖`)
                 await Sign(url_lottery)
@@ -241,6 +251,7 @@ async function doPointSign() {
             console.log(`当前无抽奖次数,错误信息:${data.msg}`)
         }else{
             console.log(`抽奖信息:${$.data.data}`)
+            $.signMessage += `抽奖信息:${$.data.data}\n`
         }
         $.data=null;
     }
@@ -698,6 +709,7 @@ function getUserBuildingInfo() {//获取用户建筑信息
                         console.log(`\n============ 账号${$.index+1}:'${$.nickName}'开始任务 ============`)
                         console.log(`*******开始心愿城任务*******`)
 						console.log(`总建筑数量:${data.data.userBuildingInfo.length}\n总生产速度:${data.data.goldCoinProduceSpeed}\n可以开宝箱:${data.data.hasSpecialTaskCount}`)
+                        $.message += `【账号${$.index+1}】${$.nickName}\n`
 						for (i = 0; i < data.data.userBuildingInfo.length; i++) {
 							$.myBuildingId.push(data.data.userBuildingInfo[i].buildingId)
 						}
@@ -853,13 +865,9 @@ async function rewardCoin() {
 	}else{
 		$.message +=`当前金币:${Math.floor($.goldCoinNum/1000000 * 10)/10}M\n`
 	}
-	$.message +=`当前心愿值:${$.wishValue/1000}K\n`
+	$.message +=`当前心愿值:${$.wishValue/1000}K\n\n`
 	//console.log(addCoin)
 	console.log($.message)
-	if(new Date().getHours() >16 && new Date().getHours() <18){
-		await notify.sendNotify($.name,$.message);
-	}
-	
   } catch (e) {
     $.logErr(e)
   }

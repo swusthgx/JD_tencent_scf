@@ -76,7 +76,7 @@ const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
             $.index = a ;
 
             //-----心愿城
-            await getUserBuildingInfo() //获取建筑信息
+            //await getUserBuildingInfo() //获取建筑信息
             await rewardCoin() //收取金币
             await doFairylandTask()//心愿城任务
 
@@ -427,6 +427,7 @@ function rewardGoldCoin(links,buildingId) {//收取金币
           if (safeGet(data)) {
 			if(buildingId){
 				data = JSON.parse(data);
+                $.data = data
 				//console.log(`获得${data.data.userAccount.nickName}`);
 				$.message +=`建筑${buildingId}收获金币:${data.data.addCoin}\n`
 				$.addCoin += parseInt(data.data.addCoin);
@@ -705,10 +706,11 @@ function getUserBuildingInfo() {//获取用户建筑信息
 						}
 						$.hasSpecialTaskCount = data.data.hasSpecialTaskCount
 						$.nickName = data.data.userAccount.nickName
-                        console.log(`\n============ 账号${$.index+1}:'${$.nickName}'开始任务 ============`)
-                        console.log(`*******开始心愿城任务*******`)
-						console.log(`总建筑数量:${data.data.userBuildingInfo.length}\n总生产速度:${data.data.goldCoinProduceSpeed}\n可以开宝箱:${data.data.hasSpecialTaskCount}`)
-                        $.message += `【账号${$.index+1}】${$.nickName}\n`
+						$.data = data
+                        //console.log(`\n============ 账号${$.index+1}:'${$.nickName}'开始任务 ============`)
+                        //console.log(`*******开始心愿城收取金币任务*******`)
+						//console.log(`总建筑数量:${data.data.userBuildingInfo.length}\n总生产速度:${data.data.goldCoinProduceSpeed}\n可以开宝箱:${data.data.hasSpecialTaskCount}`)
+                        //$.message += `【账号${$.index+1}】${$.nickName}\n`
 						for (i = 0; i < data.data.userBuildingInfo.length; i++) {
 							$.myBuildingId.push(data.data.userBuildingInfo[i].buildingId)
 						}
@@ -832,7 +834,16 @@ function safeGet(data) {
 
 async function rewardCoin() {
   try {
-    // await getUserBuildingInfo() //获取建筑信息
+    await getUserBuildingInfo() //获取建筑信息
+    if($.data){
+        console.log(`\n============ 账号${$.index+1}:'${$.nickName}'开始任务 ============`)
+        console.log(`*******开始心愿城收取金币任务*******`)
+        console.log(`总建筑数量:${$.data.data.userBuildingInfo.length}\n总生产速度:${$.data.data.goldCoinProduceSpeed}\n可以开宝箱:${$.data.data.hasSpecialTaskCount}`)
+        $.data = null
+    }
+    
+    //$.message += `【账号${$.index+1}】${$.nickName}\n`
+    
     await sleep(2000)
     while($.hasSpecialTaskCount == true){
         await receiveSpecialGoldCoin()
@@ -847,26 +858,28 @@ async function rewardCoin() {
 	  await sleep(2000)
       await rewardGoldCoin(url_saveUserRecord)
 	  delay = radomTimers()
-	  console.log(`建筑${$.myBuildingId[i]}收取完成,延迟${delay/1000}秒`)
+	  console.log(`建筑${$.myBuildingId[i]}收取完成，获得金币:${$.data.data.addCoin}，延迟${delay/1000}秒`)
       await sleep(delay)
     }
 	$.message +=`-----------------------\n`
 	
 	if($.addCoin<1000000){
 		$.message +=`本次运行获得金币:${Math.floor($.addCoin/1000)}K\n`
-		//console.log(addCoin/)
+		console.log(`本次运行获得金币:${Math.floor($.addCoin/1000)}K\n`)
 	}else{
 		$.message +=`本次运行获得金币:${Math.floor($.addCoin/1000000 * 100)/100}M\n`
+        console.log(`本次运行获得金币:${Math.floor($.addCoin/1000000 * 100)/100}M\n`)
 	}
 	if($.goldCoinNum<1000000){
 		$.message +=`当前金币:${Math.floor($.goldCoinNum/1000)}K\n`
-		//console.log(addCoin/)
+		console.log(`当前金币:${Math.floor($.goldCoinNum/1000)}K\n`)
 	}else{
 		$.message +=`当前金币:${Math.floor($.goldCoinNum/1000000 * 10)/10}M\n`
+        console.log(`当前金币:${Math.floor($.goldCoinNum/1000000 * 10)/10}M\n`)
 	}
 	$.message +=`当前心愿值:${$.wishValue/1000}K\n\n`
-	//console.log(addCoin)
-	console.log($.message)
+	console.log(`当前心愿值:${$.wishValue/1000}K\n\n`)
+	//console.log($.message)
   } catch (e) {
     $.logErr(e)
   }

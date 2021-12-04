@@ -845,7 +845,7 @@ async function rewardCoin() {
         $.data = null
     }
     
-    //$.message += `【账号${$.index+1}】${$.nickName}\n`
+    $.message += `【账号${$.index+1}】${$.nickName}\n`
     
     await sleep(2000)
     while($.hasSpecialTaskCount == true){
@@ -864,21 +864,22 @@ async function rewardCoin() {
 	  console.log(`建筑${$.myBuildingId[i]}收取完成，获得金币:${$.data.data.addCoin}，延迟${delay/1000}秒`)
       await sleep(delay)
     }
-	$.message +=`-----------------------\n`
+	$.message +=`-----------------------`
+    console.log(`-----------------------`)
 	
 	if($.addCoin<1000000){
 		$.message +=`本次运行获得金币:${Math.floor($.addCoin/1000)}K\n`
-		console.log(`本次运行获得金币:${Math.floor($.addCoin/1000)}K\n`)
+		console.log(`本次运行获得金币:${Math.floor($.addCoin/1000)}K`)
 	}else{
 		$.message +=`本次运行获得金币:${Math.floor($.addCoin/1000000 * 100)/100}M\n`
-        console.log(`本次运行获得金币:${Math.floor($.addCoin/1000000 * 100)/100}M\n`)
+        console.log(`本次运行获得金币:${Math.floor($.addCoin/1000000 * 100)/100}M`)
 	}
 	if($.goldCoinNum<1000000){
 		$.message +=`当前金币:${Math.floor($.goldCoinNum/1000)}K\n`
-		console.log(`当前金币:${Math.floor($.goldCoinNum/1000)}K\n`)
+		console.log(`当前金币:${Math.floor($.goldCoinNum/1000)}K`)
 	}else{
 		$.message +=`当前金币:${Math.floor($.goldCoinNum/1000000 * 10)/10}M\n`
-        console.log(`当前金币:${Math.floor($.goldCoinNum/1000000 * 10)/10}M\n`)
+        console.log(`当前金币:${Math.floor($.goldCoinNum/1000000 * 10)/10}M`)
 	}
 	$.message +=`当前心愿值:${$.wishValue/1000}K\n\n`
 	console.log(`当前心愿值:${$.wishValue/1000}K\n\n`)

@@ -270,7 +270,7 @@ async function doWishTreeTask() {
         }
         if($.data.data.status){
             console.log(`今日可领取水滴${$.data.data.tomorrowWaterValue}g,去领取水滴...`)
-            wishGet(url_getTomorrowWater)
+            await wishGet(url_getTomorrowWater)
             console.log(`领取成功,当前共有水滴${$.data.data.kettleWater}g`)
             await sleep(radomTimers()) 
         }else{
@@ -711,9 +711,12 @@ function getUserBuildingInfo() {//获取用户建筑信息
                         //console.log(`*******开始心愿城收取金币任务*******`)
 						//console.log(`总建筑数量:${data.data.userBuildingInfo.length}\n总生产速度:${data.data.goldCoinProduceSpeed}\n可以开宝箱:${data.data.hasSpecialTaskCount}`)
                         //$.message += `【账号${$.index+1}】${$.nickName}\n`
-						for (i = 0; i < data.data.userBuildingInfo.length; i++) {
-							$.myBuildingId.push(data.data.userBuildingInfo[i].buildingId)
-						}
+                        if(!$.myBuildingId.length){
+                            for (i = 0; i < data.data.userBuildingInfo.length; i++) {
+                                $.myBuildingId.push(data.data.userBuildingInfo[i].buildingId)
+                            }
+                        }
+
 					} else {
 						$.log('服务器返回空数据,将无法获取信息');
 					}
@@ -1317,7 +1320,7 @@ function finishTask(url,taskName) {//
                     break;
                 case taskClick5P:
                     $.rewardId = data.data.rewardId
-                    //console.log(`做任务${taskClick5P},${body}`)
+                    console.log(data.data.rewardId)
                     break;
                 case taskWaterFertilization:
 

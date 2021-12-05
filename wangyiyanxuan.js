@@ -74,7 +74,11 @@ const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
 			$.goldCoinNum = 0;
             $.rewardId = 0;
             $.index = a ;
+            $.skip = '';
 
+            // await wishGet(url_tomorrowWater)
+            // await wishGet(url_getTomorrowWater)
+            // return
             //-----心愿城
             //await getUserBuildingInfo() //获取建筑信息
             await rewardCoin() //收取金币
@@ -108,6 +112,7 @@ const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
 
 
 async function doFairylandTask() {
+    await sleep(2000)
     await fairylandGetTaskList()//心愿城获取任务列表
     await sleep(2000)
     if($.data){
@@ -127,7 +132,7 @@ async function doFairylandTask() {
             }
 
             if($.data.data[a].taskType == 3000 && $.data.data[a].finishedChance !=5){
-                for(let c =0;c < remainChance; c++){
+                for(let c =0;c < remainChance - 1; c++){
                     for (let i = 0; i < 6/*$.data.data[a].totalChance-$.data.data[a].finishedChance*/; i++) {
                         $.rewardId = 0;
                         console.log(`去做点击5个商品任务,延迟3秒...`)
@@ -142,6 +147,7 @@ async function doFairylandTask() {
                 }
             }
             if($.data.data[a].taskType == 10 && $.data.data[a].finishedChance !=1){
+                console.log(`去做签到任务,延迟3秒...`)
                 await fairylandDoTask(getbody('signin'))
                 await sleep(3000)
             }
@@ -187,6 +193,7 @@ async function doFairylandTask() {
                 console.log(`'${$.data[a].buildingName}'升级需要金币${$.data[a].upgradePrice > 1000000 ? $.data[a].upgradePrice/1000000+'M' : $.data[a].upgradePrice/1000 +'K'},去升级...`)
                 await buildingUpgrade(body)//升级建筑
                 await sleep(2000)
+                break
             }
         }
         $.data=null;
@@ -271,6 +278,7 @@ async function doWishTreeTask() {
         if($.data.data.status){
             console.log(`今日可领取水滴${$.data.data.tomorrowWaterValue}g,去领取水滴...`)
             await wishGet(url_getTomorrowWater)
+            await sleep(2000)
             console.log(`领取成功,当前共有水滴${$.data.data.kettleWater}g`)
             await sleep(radomTimers()) 
         }else{
@@ -281,11 +289,11 @@ async function doWishTreeTask() {
             while($.data.data.tomorrowWaterValue < 90){
                 await watering()
                 await sleep(radomTimers())
-                if($.data.data.nutritionValue < 90 ){
-                    console.log(`需要施肥`)
-                    await finishTask(url_waterFertilizationpost,taskWaterFertilization)
-                    await sleep(3000)
-                }
+                // if($.data.data.nutritionValue < 90 ){
+                //     console.log(`需要施肥`)
+                //     await finishTask(url_waterFertilizationpost,taskWaterFertilization)
+                //     await sleep(3000)
+                // }
             }
         }
         $.data = null
@@ -295,9 +303,11 @@ async function doWishTreeTask() {
     if($.data){
         while($.data.data.userTreeInfoModel.kettleWaterValue > 250){
             if($.data.data.userTreeInfoModel.nutritionValue < 90 && $.data.data.userTreeInfoModel.fertilizerNumber >0){
-                console.log(`需要施肥,去施肥`)
+                console.log(`需要施肥,拥有营养瓶${$.data.data.userTreeInfoModel.fertilizerNumber}，去施肥`)
                 await finishTask(url_waterFertilizationpost,taskWaterFertilization)
                 await sleep(2000)
+            }else{
+                console.log(`拥有营养瓶${$.data.data.userTreeInfoModel.fertilizerNumber}，无法施肥`)
             }
             await watering()
             await sleep(radomTimers())
@@ -308,12 +318,16 @@ async function doWishTreeTask() {
     }
 
     if((hours== 8 | hours == 13 | hours == 18) && minutes < 30){
+        console.log(`去获取3餐水滴...`)
         await wishGet(url_getThreeMealsWater) //获取3餐水滴
+        console.log($.data)
         await sleep(radomTimers())
         await getUserTreeInfo()
         await sleep(radomTimers())
         if($.data){
+            console.log(`去签到获取养料...`)
             await finishTask(url_finishTask,taskSignFertilization)
+            console.log($.data)
             await sleep(radomTimers())
         }
         $.data = null
@@ -345,10 +359,14 @@ async function doWishTreeTask() {
             }
             if(id == 4 && finishedChance < 2){
                 console.log(`去做任务{点击5个商品}...`)
+                $.rewardId = 0
                 for(let a = 0;a < totalChance-finishedChance; a++){
                     for(let i = 0;i < 5; i++){
                         await finishTask(url_finishTask,taskClick5P)
                         await sleep(radomTimers())
+                        if($.rewardId >0){
+                            break
+                        }
                     }
                 }
             }
@@ -848,12 +866,17 @@ async function rewardCoin() {
     $.message += `【账号${$.index+1}】${$.nickName}\n`
     
     await sleep(2000)
-    while($.hasSpecialTaskCount == true){
+    if($.hasSpecialTaskCount == true){
         await receiveSpecialGoldCoin()
-        console.log(`金币宝箱还有次数,等待100秒...`)
-        await sleep(105000)
-        await getUserBuildingInfo()
-        await sleep(2000)
+        if($.skip == true){
+            console.log(`账号已黑，心愿城任务跳过`)
+            $.data = null
+            return
+        }
+        // console.log(`金币宝箱还有次数,等待100秒...`)
+        // await sleep(105000)
+        // await getUserBuildingInfo()
+        // await sleep(2000)
     }
 
 	for (let i = 0; i < $.myBuildingId.length; ++i) {
@@ -961,6 +984,7 @@ function receiveSpecialGoldCoin() {//打开金币宝箱
 		  }
           if (data.code == 411) {
 			console.log(`叼毛账号黑了,收手吧`)
+            $.skip = true
 			return
 		  }
           if (data.code == 200) {
@@ -1192,13 +1216,13 @@ async function wishGet(url) {//获取心愿树任务是否可做 ,优化
 				} else {
 					if (data) {
 						data = JSON.parse(data);
-						//console.log(data)
+						console.log(data)
 						//console.log(resp)
 						if(data.code == 400 || data.code == 401){
 							console.log(`获取数据错误:`+data.msg)
 							return resolve(data);
 						}
-						
+
 						if (data.code == 200) {
                             $.data = data
 						}
@@ -1341,6 +1365,7 @@ function finishTask(url,taskName) {//
                     break;
       
             }
+            $.data = data
             //console.log(`签到成功,获得水滴${data.data.waterValue}`)
           }
         } catch (e) {

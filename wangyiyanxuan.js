@@ -43,9 +43,10 @@ var taskClick5P="Click5Products"
 var taskWaterFertilization="waterFertilization"
 var taskSignFertilization="signFertilization"
 
-var receiveRewardScan10s="receiveRewardS10s"
-var receiveRewardClick5P="receiveRewardClick"
-var receiveRewardFindGP="receiveRewardFindGP"
+var receiveRewardScan10s = "receiveRewardS10s"
+var receiveRewardClick5P = "receiveRewardClick"
+var receiveRewardFindGP = "receiveRewardFindGP"
+var receiveRewardFertilization ="receiveRewardFertilization"
 
 // var getSignInfo="getSignInfo"
 // var signTask="doSignTask"
@@ -373,7 +374,7 @@ async function doWishTreeTask() {
         }
         $.data = null
     }
-
+    console.log(`查看已完成任务...`)
     await wishGet(url_getFinishedAwardList)
     if($.data){
         for (let a = 0; a < $.data.data.length; a++) {
@@ -395,6 +396,11 @@ async function doWishTreeTask() {
                 await finishTask(url_receiveReward,receiveRewardClick5P)
                 await sleep(radomTimers())
             }
+            if($.data.data[a].taskId == 5){
+                $.rewardId=$.data.data[a].id
+                await finishTask(url_receiveReward,receiveRewardFertilization)
+                await sleep(radomTimers())
+            }
         }
         $.data = null
     }
@@ -402,6 +408,7 @@ async function doWishTreeTask() {
     await wishGet(url_getWishCityStatus)
     await sleep(radomTimers())
     if($.data && $.data.data.entered == false){
+        console.log(`去完成任务浏览心愿城...`)
         await finishTask("https://act.you.163.com/act/napi/wish-tree/getWishCityReward?csrf_token=343533f5bbe0523cc056389baa7263ba")
         await sleep(radomTimers())
         $.data = null
@@ -1102,6 +1109,7 @@ function getUserTreeInfo() {//心愿树信息
 }
 
 function getTaskList() {//获取任务列表
+    console.log(`获取任务列表...`)
 	return new Promise(async resolve => {
 		url="https://act.you.163.com/act/napi/wish-tree/getTaskList?csrf_token=1176afb489d52bd72f460b6d90400430&__timestamp="+Date.now()
 		const options = {
@@ -1216,7 +1224,7 @@ async function wishGet(url) {//获取心愿树任务是否可做 ,优化
 				} else {
 					if (data) {
 						data = JSON.parse(data);
-						console.log(data)
+						//console.log(data)
 						//console.log(resp)
 						if(data.code == 400 || data.code == 401){
 							console.log(`获取数据错误:`+data.msg)
@@ -1278,6 +1286,9 @@ function finishTask(url,taskName) {//
               break;
           case receiveRewardClick5P:
               body ={"rewardIds":[$.rewardId],"taskType":70}
+              break;
+          case receiveRewardFertilization:
+              body ={"rewardIds":[$.rewardId],"taskType":80}
               break;
           default:
               break;

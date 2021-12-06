@@ -19,50 +19,22 @@ if ($.isNode()) {
         console.log = () => { }
 }
 
-url_receiveGold =
-    'https://act.you.163.com/act/napi/fairyland/receiveGoldCoin?csrf_token=' +
-    $.usrToken
-url_saveUserRecord =
-    'https://act.you.163.com/act/napi/fairyland/saveUserRecord?csrf_token=' +
-    $.usrToken
+url_receiveGold = 'https://act.you.163.com/act/napi/fairyland/receiveGoldCoin?csrf_token=' + $.usrToken
+url_saveUserRecord = 'https://act.you.163.com/act/napi/fairyland/saveUserRecord?csrf_token=' + $.usrToken
 
-url_tomorrowWater =
-    'https://act.you.163.com/act/napi/wish-tree/tomorrowWater?csrf_token=db4c7db9b0245e45227c64a11b29b049&__timestamp=' +
-    Date.now() //查看明天可领取的水滴
-url_getTomorrowWater =
-    'https://act.you.163.com/act/napi/wish-tree/getTomorrowWater?csrf_token=db4c7db9b0245e45227c64a11b29b049&__timestamp=' +
-    Date.now() //领取昨日攒的水滴
-url_getTaskList =
-    'https://act.you.163.com/act/napi/wish-tree/getTaskList?csrf_token=1176afb489d52bd72f460b6d90400430&__timestamp=' +
-    Date.now() //查看任务列表
-url_receiveReward =
-    'https://act.you.163.com/act/napi/wish-tree/receiveReward?csrf_token=db4c7db9b0245e45227c64a11b29b049' //领取任务奖励{"rewardIds":["15247867"],"taskType":90}
-url_finishTask =
-    'https://act.you.163.com/act/napi/wish-tree/finishTask?_=' + Date.now() //做任务{"taskType":"20","taskId":"1"} post
-url_getFinishedAwardList =
-    'https://act.you.163.com/act/napi/wish-tree/getFinishedAwardList?csrf_token=db4c7db9b0245e45227c64a11b29b049&__timestamp=' +
-    Date.now() //已完成任务信息get
-url_getTopID =
-    'https://you.163.com/topic/v1/getTopicId.json?token=4JS7MUWKXFAT&_=' +
-    Date.now()
-url_getThreeMealsWater =
-    'https://act.you.163.com/act/napi/wish-tree/getThreeMealsWater?csrf_token=1176afb489d52bd72f460b6d90400430&taskId&taskType&__timestamp=' +
-    Date.now() //获取3餐水滴get
-url_waterFertilizationpost =
-    'https://act.you.163.com/act/napi/wish-tree/waterFertilization?csrf_token=ffee5313bb71f9c70d3f7c7fe1017dab' //施肥
-url_getWishCityStatus =
-    'https://act.you.163.com/act/napi/wish-tree/getWishCityStatus?csrf_token=343533f5bbe0523cc056389baa7263ba&__timestamp=' +
-    Date.now()
-//积分签到
-url_getSignInfo =
-    'https://m.you.163.com/act-attendance/attendance/index.json?csrf_token=db4c7db9b0245e45227c64a11b29b049&__timestamp=' +
-    Date.now() //获取签到信息
-url_signTask =
-    'https://m.you.163.com/act-attendance/attendance/attendance.json?csrf_token=db4c7db9b0245e45227c64a11b29b049&__timestamp=' +
-    Date.now() //签到获得积分
-url_lottery =
-    'https://m.you.163.com/act-attendance/attendance/lottery.json?csrf_token=ffee5313bb71f9c70d3f7c7fe1017dab&__timestamp=' +
-    Date.now() //积分签到抽奖
+url_tomorrowWater = 'https://act.you.163.com/act/napi/wish-tree/tomorrowWater?csrf_token=db4c7db9b0245e45227c64a11b29b049&__timestamp=' + Date.now() //查看明天可领取的水滴
+url_getTomorrowWater = 'https://act.you.163.com/act/napi/wish-tree/getTomorrowWater?csrf_token=db4c7db9b0245e45227c64a11b29b049&__timestamp=' + Date.now() //领取昨日攒的水滴
+url_getTaskList = 'https://act.you.163.com/act/napi/wish-tree/getTaskList?csrf_token=1176afb489d52bd72f460b6d90400430&__timestamp=' + Date.now() //查看任务列表
+url_receiveReward = 'https://act.you.163.com/act/napi/wish-tree/receiveReward?csrf_token=db4c7db9b0245e45227c64a11b29b049' //领取任务奖励{"rewardIds":["15247867"],"taskType":90}
+url_finishTask = 'https://act.you.163.com/act/napi/wish-tree/finishTask?_=' + Date.now() //做任务{"taskType":"20","taskId":"1"} post
+url_getFinishedAwardList = 'https://act.you.163.com/act/napi/wish-tree/getFinishedAwardList?csrf_token=db4c7db9b0245e45227c64a11b29b049&__timestamp=' + Date.now() //已完成任务信息get
+url_getTopID = 'https://you.163.com/topic/v1/getTopicId.json?token=4JS7MUWKXFAT&_=' + Date.now()
+url_getThreeMealsWater = 'https://act.you.163.com/act/napi/wish-tree/getThreeMealsWater?csrf_token=1176afb489d52bd72f460b6d90400430&taskId&taskType&__timestamp=' + Date.now() //获取3餐水滴get
+url_waterFertilizationpost = 'https://act.you.163.com/act/napi/wish-tree/waterFertilization?csrf_token=ffee5313bb71f9c70d3f7c7fe1017dab' //施肥
+url_getWishCityStatus = 'https://act.you.163.com/act/napi/wish-tree/getWishCityStatus?csrf_token=343533f5bbe0523cc056389baa7263ba&__timestamp=' + Date.now()//积分签到
+url_getSignInfo = 'https://m.you.163.com/act-attendance/attendance/index.json?csrf_token=db4c7db9b0245e45227c64a11b29b049&__timestamp=' + Date.now() //获取签到信息
+url_signTask = 'https://m.you.163.com/act-attendance/attendance/attendance.json?csrf_token=db4c7db9b0245e45227c64a11b29b049&__timestamp=' + Date.now() //签到获得积分
+url_lottery = 'https://m.you.163.com/act-attendance/attendance/lottery.json?csrf_token=ffee5313bb71f9c70d3f7c7fe1017dab&__timestamp=' + Date.now() //积分签到抽奖
 
 var signRewardWater = 'sign reward water'
 var taskScan10s = 'Scan10s'
@@ -105,9 +77,6 @@ const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
             $.index = a
             $.skip = ''
 
-            // await wishGet(url_tomorrowWater)
-            // await wishGet(url_getTomorrowWater)
-            // return
             //-----心愿城
             //await getUserBuildingInfo() //获取建筑信息
             await rewardCoin() //收取金币
@@ -124,11 +93,7 @@ const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
     if (new Date().getHours() % 6 == 0 && new Date().getMinutes() < 20) {
         await notify.sendNotify($.name, $.message)
     }
-    if (
-        new Date().getHours() % 12 == 0 &&
-        new Date().getMinutes() < 20 &&
-        $.signMessage
-    ) {
+    if (new Date().getHours() % 12 == 0 && new Date().getMinutes() < 20 && $.signMessage) {
         await sleep(5000)
         await notify.sendNotify($.name, $.signMessage)
     }
@@ -246,14 +211,10 @@ async function doPointSign () {
             return
         }
         if ($.data.data.signTaskData.goodsSceneBo != null) {
-            console.log(
-                `连续签到免费拿商品信息:\n商品名称: {${$.data.data.signTaskData.goodsSceneBo.name}},原价:${$.data.data.signTaskData.goodsSceneBo.price}元`
-            )
-            console.log(
-                `需要连续签到: ${$.data.data.signTaskData.totalDay}天, 已连续签到: ${$.data.data.signTaskData.haveSignInDay}天\n`
-            )
-            $.signMessage += `连续签到免费拿商品信息:\n商品名称: {${$.data.data.signTaskData.goodsSceneBo.name}},原价:${$.data.data.signTaskData.goodsSceneBo.price}元`
-            $.signMessage += `需要连续签到: ${$.data.data.signTaskData.totalDay}天, 已连续签到: ${$.data.data.signTaskData.haveSignInDay}天\n`
+            console.log(`连续签到免费拿商品信息:\n商品名称: {${$.data.data.signTaskData.goodsSceneBo.name}},原价:${$.data.data.signTaskData.goodsSceneBo.price}元`)
+            console.log(`需要连续签到: ${$.data.data.signTaskData.totalDay}天, 已连续签到: ${$.data.data.signTaskData.haveSignInDay}天\n`)
+            $.signMessage += `连续签到免费拿商品信息:\n商品名称: {${$.data.data.signTaskData.goodsSceneBo.name}}\n原价:${$.data.data.signTaskData.goodsSceneBo.price}元\n`
+            $.signMessage += `需要连续签到: ${$.data.data.signTaskData.totalDay}天\n已连续签到: ${$.data.data.signTaskData.haveSignInDay}天\n`
         } else {
             console.log(`当前没有连续签到获得商品任务.`)
         }
@@ -278,12 +239,13 @@ async function doPointSign () {
             return
         } else if ($.data.code == 200) {
             console.log(`签到成功,已连续签到${$.data.data.haveSignInDay}天。\n签到获得${$.data.data.score}积分,连续签到获得${$.data.data.continuousScore},总共获得${$.data.data.totalScore}积分。\n明日签到积分${$.data.data.tomorrowPoint}`)
-            $.signMessage += `'${$.nickName}'签到成功,已连续签到${$.data.data.haveSignInDay}天。\n签到获得${$.data.data.score}积分,连续签到获得${$.data.data.continuousScore},总共获得${$.data.data.totalScore}积分。\n明日签到积分${$.data.data.tomorrowPoint}`
+            $.signMessage += `'${$.nickName}'签到成功,已连续签到${$.data.data.haveSignInDay}天。\n签到获得${$.data.data.score}积分,连续签到获得${$.data.data.continuousScore},总共获得${$.data.data.totalScore}积分。\n明日签到获得${$.data.data.tomorrowPoint}积分\n`
+            $.signMessage += `-----------------------------------\n`
             // notify.sendNotify($.name,$.signMessage);
             if ($.data.data.lotteryTimes == 1) {
                 console.log(`每周1次抽奖机会,周二刷新。当前可抽奖次数${$.data.data.lotteryTimes},去抽奖`)
                 await Sign(url_lottery)
-                sleep(2000)
+                await sleep(2000)
             } else {
                 $.data = null
             }
@@ -312,27 +274,30 @@ async function doWishTreeTask () {
             console.log(`获取数据错误:` + $.data.msg)
             return
         }
-        if ($.data.data.status) {
-            console.log(`今日可领取水滴${$.data.data.tomorrowWaterValue}g,去领取水滴...`)
-            await wishGet(url_getTomorrowWater)
-            await sleep(2000)
-            console.log(`领取成功,当前共有水滴${$.data.data.kettleWater}g`)
-            await sleep(radomTimers())
-        } else {
-            console.log(`今日水滴已领取过,明日可领取${$.data.data.tomorrowWaterValue}g`)
-            if ($.data.data.tomorrowWaterValue < 90) {
-                console.log(`明日可领取水滴小于154g,去浇水...`)
-            }
-            while ($.data.data.tomorrowWaterValue < 90) {
-                await watering()
+        if (new Date().getHours() > 8) {
+            if ($.data.data.status) {
+                console.log(`今日可领取水滴${$.data.data.tomorrowWaterValue}g,去领取水滴...`)
+                await wishGet(url_getTomorrowWater)
+                await sleep(2000)
+                console.log(`领取成功,当前共有水滴${$.data.data.kettleWater}g`)
                 await sleep(radomTimers())
-                // if($.data.data.nutritionValue < 90 ){
-                //     console.log(`需要施肥`)
-                //     await finishTask(url_waterFertilizationpost,taskWaterFertilization)
-                //     await sleep(3000)
-                // }
+            } else {
+                console.log(`今日水滴已领取过,明日可领取${$.data.data.tomorrowWaterValue}g`)
+                if ($.data.data.tomorrowWaterValue < 90) {
+                    console.log(`明日可领取水滴小于154g,去浇水...`)
+                }
+                while ($.data.data.tomorrowWaterValue < 90) {
+                    await watering()
+                    await sleep(radomTimers())
+                    // if($.data.data.nutritionValue < 90 ){
+                    //     console.log(`需要施肥`)
+                    //     await finishTask(url_waterFertilizationpost,taskWaterFertilization)
+                    //     await sleep(3000)
+                    // }
+                }
             }
         }
+
         $.data = null
     }
 

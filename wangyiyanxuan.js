@@ -398,6 +398,7 @@ async function doWishTreeTask () {
                 await sleep(radomTimers())
             }
             if ($.data.data[a].taskId == 5) {
+                console.log(`领取养料瓶`)
                 $.rewardId = $.data.data[a].id
                 await finishTask(url_receiveReward, receiveRewardFertilization)
                 await sleep(radomTimers())

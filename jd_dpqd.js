@@ -15,6 +15,7 @@ if (!token.length) {
   return
 }
 const $ = new Env('店铺签到');
+const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
 
 const notify = $.isNode() ? require('./sendNotify') : '';
 //Node.js用户请在jdCookie.js处填写京东ck;
@@ -83,11 +84,16 @@ async function dpqd() {
     num = j + 1
     if (token[j] == '') { continue }
     await getvenderId(token[j])
+	await sleep(radomTimers())
     if (vender == '') { continue }
     await getvenderName(vender)
+	await sleep(radomTimers())
     await getActivityInfo(token[j], vender)
+	await sleep(radomTimers())
     await signCollectGift(token[j], vender, activityId)
+	await sleep(radomTimers())
     await taskUrl(token[j], vender)
+	await sleep(radomTimers())
   }
 }
 
@@ -332,6 +338,10 @@ function jsonParse(str) {
       return [];
     }
   }
+}
+
+function radomTimers () {
+    return Math.floor(Math.random() * (10000 - 4000) + 5000)
 }
 
 // prettier-ignore

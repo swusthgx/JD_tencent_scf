@@ -7,9 +7,9 @@ let CookieWYs = [
 ]
 // 判断环境变量里面是否有京东ck
 if (process.env.WY_COOKIE) {
-  if (process.env.WY_COOKIE.indexOf('&') > -1) {
-    console.log(`您的cookie选择的是用&隔开\n`)
-    CookieWYs = process.env.WY_COOKIE.split('&');
+  if (process.env.WY_COOKIE.indexOf('\n') > -1) {
+    console.log(`您的cookie选择的是用\n隔开\n`)
+    CookieWYs = process.env.WY_COOKIE.split('\n');
   } else if (process.env.WY_COOKIE.indexOf('\n') > -1) {
     console.log(`您的cookie选择的是用换行隔开\n`)
     CookieWYs = process.env.WY_COOKIE.split('\n');

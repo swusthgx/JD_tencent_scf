@@ -207,9 +207,9 @@ async function doPointSign () {
     if ($.data) {
         if ($.data.code == 401) {
             console.log(`cookie已失效!!.`)
-			if (new Date().getHours() % 6 == 0 && new Date().getMinutes() < 20) {
-				await notify.sendNotify($.name, `账号${$.index+1} cookie已失效!!.`)
-			}
+            if (new Date().getHours() % 6 == 0 && new Date().getMinutes() < 20) {
+                await notify.sendNotify($.name, `账号${$.index+1} cookie已失效!!.`)
+            }
             //$.respcode = data.code
             return
         }

@@ -49,12 +49,12 @@ const headers = {
 
 function rand() {
   let key = [
-    "金马",
-    "新星",
-    "中科",
+    "虎牙",
+    "立讯",
+    "建华",
     "盛大",
-    "欧洲",
-    "信誉",
+    "永辉",
+    "鑫海",
     "华盛",
     "豪庭",
     "奥克",
@@ -63,7 +63,9 @@ function rand() {
     "鑫鑫",
     "创新",
     "宝石",
-    "矿业"
+    "矿业",
+	"巨力"，
+	"美莎"
   ];
   let i = Math.floor(Math.random() * key.length);
   return key[i];
@@ -263,7 +265,7 @@ async function dotask(taskList) {
         await get(`smart/questionDetailAjax?nid=${nid}`, "get")}
         break
       case "CX12011"://点赞观点
-        console.log("开始任务：" + oo[o.title])
+        /*console.log("开始任务：" + oo[o.title])
         nid = nid?nid:"1851233986328193016"
         let qCListres = await get(`smart/questionCommentListAjax?nid=${nid}`, "get")
         if(qCListres.status==0) {
@@ -271,7 +273,7 @@ async function dotask(taskList) {
         randomkey = Math.floor((Math.random()*pList.length))
         pid = pList[randomkey].reply_id
         await get(`smart/updownAjax?undoType=0&clientType=app&nid=${nid}&parentId=${pid}`, "get")
-        }
+        }*/
         break
       default:
         break;

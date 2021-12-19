@@ -83,7 +83,7 @@ const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
             await doFairylandTask() //心愿城任务
 
             //-----心愿树
-            await doWishTreeTask()
+            //await doWishTreeTask()
 
             //----------积分签到
             await doPointSign()

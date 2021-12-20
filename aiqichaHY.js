@@ -64,7 +64,7 @@ function rand() {
     "创新",
     "宝石",
     "矿业",
-	"巨力"，
+	"巨力",
 	"美莎"
   ];
   let i = Math.floor(Math.random() * key.length);

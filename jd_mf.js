@@ -95,7 +95,8 @@ async function getInteractionInfo(type = true) {
                 let vo = data.result.taskPoolInfo.taskList[key]
                 if (vo.taskStatus === 0) {
                   if (vo.taskId === 2004) {
-                    await queryPanamaFloor(vo.groupId)
+                    await queryPanamaFloor()
+                    //console.log(JSON.stringify($.sku2))
                     for (let id of $.sku2) {
                       $.complete = false
                       await executeNewInteractionTask(vo.taskId, id)
@@ -154,12 +155,39 @@ async function getInteractionInfo(type = true) {
 }
 function queryPanamaFloor() {
   return new Promise((resolve) => {
+    $.post(taskPostUrl("qryCompositeMaterials", {"geo":{"lng":"114.266438","lat":"22.74448"},"mcChannel":0,"activityId":"01128912","pageId":"3278395","qryParam":"[{\"type\":\"advertGroup\",\"id\":\"06053714\",\"mapTo\":\"advData\",\"next\":[{\"type\":\"advertGroup\",\"mapKey\":\"desc\",\"mapTo\":\"advertGroup\"}]}]","applyKey":"21new_products_h"}), (err, resp, data) => {
+      try {
+        if (err) {
+          console.log(`${JSON.stringify(err)}`)
+          console.log(`queryPanamaFloor API请求失败，请检查网路重试`)
+        } else {
+          if (safeGet(data)) {
+            data = JSON.parse(data)
+             //console.log(data.data.advData.list.length);
+            for (let skuVo of data.data.advData.list) {
+                //console.log(skuVo)
+                $.sku2.push(skuVo.advertId)
+              //}
+            }
+          }
+        }
+      } catch (e) {
+        $.logErr(e, resp)
+      } finally {
+        resolve(data)
+      }
+    })
+  })
+}
+
+/*function queryPanamaFloor() {
+  return new Promise((resolve) => {
     let options = {
       url: 'https://api.m.jd.com/client.action?functionId=queryPanamaFloor',
       headers: {
-        'Host': 'api.m.jd.com',
-        'Accept': 'application/json, text/plain, */*',
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Host': 'api.m.jd.com',*/
+        //'Accept': 'application/json, text/plain, */*',
+/*        'Content-Type': 'application/x-www-form-urlencoded',
         'Origin': 'https://prodev.m.jd.com',
         'Accept-Language': 'zh-cn',
         'User-Agent': $.isNode() ? (process.env.JD_USER_AGENT ? process.env.JD_USER_AGENT : (require('./USER_AGENTS').USER_AGENT)) : ($.getdata('JDUA') ? $.getdata('JDUA') : "jdapp;iPhone;9.4.4;14.3;network/4g;Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1"),
@@ -177,6 +205,7 @@ function queryPanamaFloor() {
         } else {
           if (safeGet(data)) {
             data = JSON.parse(data)
+            console.log(JSON.stringify(data))
             for (let key of Object.keys(data.floorList)) {
               let vo = data.floorList[key]
               if (vo.data && vo.data.goodsInfo_0) {
@@ -196,7 +225,7 @@ function queryPanamaFloor() {
       }
     })
   })
-}
+}*/
 
 function qryCompositeMaterials() {
   return new Promise((resolve) => {

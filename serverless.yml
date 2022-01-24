@@ -54,5 +54,11 @@ inputs:
           cronExpression: "59 19 0 * * * *"
           enable: true
           argument: jd_jxmc
+    - timer:
+        parameters:
+          name: jd_redrain_half
+          cronExpression: "59 29 21,22 * * * *"
+          enable: true
+          argument: jd_redrain_half
   environment: #  环境变量
     variables: #  环境变量对象

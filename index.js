@@ -141,7 +141,7 @@ exports.main_handler = async (event, context, callback) => {
             }
         }
     } else {
-        console.log('异步执行不支持params参数!');
+        console.log('异步执行不支持params参数');
         ['log', 'warn', 'error', 'debug', 'info'].forEach((methodName) => {
             const originalMethod = console[methodName]
             console[methodName] = (...args) => {
